@@ -1,24 +1,32 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import LoginButton from './pages/LoginButton';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+  Link,
+} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './Redux/store';
+import Dashboard from './pages/Dashboard';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function App() {
+  const { user, isAuthenticated, isLoading } = useAuth0();
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Provider store={store}>
+        <Router>
+          {!isAuthenticated && !isLoading && <LoginButton />}
+          {isAuthenticated && <Redirect to="/dashboard" />}
+          <Switch>
+            <Route exact path="/dashboard" component={Dashboard} />
+          </Switch>
+        </Router>
+      </Provider>
     </div>
   );
 }
